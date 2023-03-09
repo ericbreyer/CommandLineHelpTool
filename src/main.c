@@ -60,14 +60,9 @@ int main(int argc, char **argv) {
     bool newKey = false;
     int opt;
     int numToGen = 1;
-    char* shell = "bash";
+    char *shell = "bash";
     while ((opt = getopt(argc, argv, "hkn:s:")) != -1) {
         switch (opt) {
-        case 'h':
-            fprintf(stdout, "*Bash Terminal Command Helper* \n btch [flags] "
-                            "\"command description\" \n -h: displays this "
-                            "message \n -k: force reinput of openai key\n");
-            return 0;
         case 'k':
             newKey = true;
             break;
@@ -77,9 +72,21 @@ int main(int argc, char **argv) {
         case 's':
             shell = optarg;
             break;
+        case 'h':
         default:
-            fprintf(stderr, "Usage: %s [-ilw] [file...]\n", argv[0]);
-            exit(EXIT_FAILURE);
+            fprintf(
+                stdout,
+                "\nbtch [-s <shell>] [-n <number>] [-k] \"<command description>\"\n\n" 
+                "optional flags: \n"
+                "-h : show this menu \n"
+                "-s <shell> : the shell you are using (defualts to bash) \n"
+                "-n <number> : number of results to generate (defaults to one, "
+                "only use if \n\t\tthe result from one is insufficient and you want "
+                "some varaibility) \n"
+                "-k : force reentering of the openai api key (key gets cached after each run)\n\n"
+                "Note: If you are running the command for the first time (or it can not find the key file), \nit will ask for your openai api key regardless of the -k flag."
+                "\n\n");
+            return 0;
         }
     }
 
@@ -130,7 +137,7 @@ int main(int argc, char **argv) {
                         \"top_p\": 1,\n\
                         \"n\": %d,\n\
                         \"prompt\":\"Respond ONLY with the %s shell command to do the following action ONLY unless you can not infer enough information then ONLY respond with NOT ENOUGH INFO: and the information required to complete the request \\n\\n The action: \\\"\\\"\\\"%s\\\"\\\"\\\"\"}",
-                numToGen == 1 ? 0 : 0.65,numToGen, shell, argv[optind]);
+                numToGen == 1 ? 0 : 0.65, numToGen, shell, argv[optind]);
 
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
 
@@ -175,7 +182,8 @@ int main(int argc, char **argv) {
                 // yourself
                 // || %s\"", cmd, cmd, cmd);
                 sprintf(shellCmd, "echo \"%s\" | pbcopy", cmd);
-                numToGen == 1 ? printf("command copied to clipboard\n") : printf("last command copied to clipboard\n");
+                numToGen == 1 ? printf("command copied to clipboard\n")
+                              : printf("last command copied to clipboard\n");
                 system(shellCmd);
                 free(shellCmd);
                 json_value_free(response);

@@ -5,7 +5,7 @@ PROG = btch
 CC=gcc 
 CFLAGS= -Wall -Wextra -g -lcurl
 
-.PHONY: clean all default build run debug install uninstall
+.PHONY: clean all default build run debug install uninstall depends
 
 default: build
 
@@ -17,6 +17,9 @@ build: $(OBJECTS)
 
 install: build
 	sudo mv ./bin/build.exe /usr/local/bin/$(PROG)
+
+depends:
+	brew install curl
 
 uninstall:
 	-sudo rm -f /usr/local/bin/$(PROG)
