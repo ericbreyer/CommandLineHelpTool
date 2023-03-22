@@ -56,24 +56,27 @@ char *getAuthKey(bool forceReinput) {
 }
 
 void help() {
-                fprintf(
-                stdout,
-                "\nbtch [-s <shell>] [-n <number>] [-k] \"<command description>\"\n\n" 
-                "optional flags: \n"
-                "-h : show this menu \n"
-                "-s <shell> : the shell you are using (defualts to bash) \n"
-                "-n <number> : number of results to generate (defaults to one, "
-                "only use if \n\t\tthe result from one is insufficient and you want "
-                "some varaibility) \n"
-                "-k : force reentering of the openai api key (key gets cached after each run)\n\n"
-                "Note: If you are running the command for the first time (or it can not find the key file), \nit will ask for your openai api key regardless of the -k flag."
-                "\n\n");
-            exit(0);
+    fprintf(
+        stdout,
+        "\nbtch [-s <shell>] [-n <number>] [-k] \"<command description>\"\n\n"
+        "optional flags: \n"
+        "-h : show this menu \n"
+        "-s <shell> : the shell you are using (defualts to bash) \n"
+        "-n <number> : number of results to generate (defaults to one, "
+        "only use if \n\t\tthe result from one is insufficient and you want "
+        "some varaibility) \n"
+        "-k : force reentering of the openai api key (key gets cached after "
+        "each run)\n\n"
+        "Note: If you are running the command for the first time (or it can "
+        "not find the key file), \nit will ask for your openai api key "
+        "regardless of the -k flag."
+        "\n\n");
+    exit(0);
 }
 
 int main(int argc, char **argv) {
 
-    bool newKey = false;
+    bool getNewKey = false;
     int opt;
     optind = 1;
     int numToGen = 1;
@@ -81,7 +84,7 @@ int main(int argc, char **argv) {
     while ((opt = getopt(argc, argv, "hkn:s:")) != -1) {
         switch (opt) {
         case 'k':
-            newKey = true;
+            getNewKey = true;
             break;
         case 'n':
             numToGen = atoi(optarg);
@@ -94,7 +97,7 @@ int main(int argc, char **argv) {
             help();
         }
     }
-    if(argc <= optind) {
+    if (argc <= optind) {
         help();
     }
 
@@ -119,7 +122,7 @@ int main(int argc, char **argv) {
 
         /* Add a header with "blank" contents to the right of the colon. Note
            that we are then using a semicolon in the string we pass to curl! */
-        char *auth = getAuthKey(newKey);
+        char *auth = getAuthKey(getNewKey);
         char *bearer = malloc(strlen(auth) + strlen("Authorization: Bearer "));
         sprintf(bearer, "Authorization: Bearer %s", auth);
         headers = curl_slist_append(headers, bearer);
